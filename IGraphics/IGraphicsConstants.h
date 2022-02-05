@@ -53,7 +53,8 @@ static const char* DEFAULT_PATH = "~/Desktop";
 const char* const DEFAULT_FONT = "Roboto-Regular";
 #endif
 
-static constexpr float DEFAULT_TEXT_SIZE = 14.f;
+static const float SENDER_THRESHOLD = (float) DBToAmp(-90.);
+static constexpr float DEFAULT_TEXT_SIZE = 11.f;
 static constexpr int FONT_LEN = 64;
 
 /** @enum EBlend Porter-Duff blend mode/compositing operators */
@@ -84,8 +85,8 @@ enum class ETextStyle { Normal, Bold, Italic };
 /** \todo */
 enum class EAlign { Near, Center, Far };
 
-/** \todo */
-enum class EVAlign { Top, Middle, Bottom };
+/** /todo */
+enum class EVAlign { Top, Middle, Bottom, Baseline };
 
 /** CStrings for EAlign options  */
 static const char* kEAlignStrs[3] = { "Near", "Center", "Far" };
