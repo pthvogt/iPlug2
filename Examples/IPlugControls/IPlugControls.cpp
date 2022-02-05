@@ -442,7 +442,7 @@ IPlugControls::IPlugControls(const InstanceInfo& info)
       });
     };
     
-    pGraphics->AttachControl(new IVNumberBoxControl(sameCell().SubRectVertical(5, 4), kNoParameter, setValueTextSize, "Value Text Size", style, (double) style.valueText.mSize, 12., 100.));
+    pGraphics->AttachControl(new IVNumberBoxControl(sameCell().SubRectVertical(5, 4), kNoParameter, setValueTextSize, "Value Text Size", style, (double) style.valueText.mSize, 11., 100.));
 
     auto promptLabelFont = [pGraphics](IControl* pCaller) {
       WDL_String fileName;
