@@ -1508,7 +1508,7 @@ void IGraphicsWin::CreatePlatformTextEntry(int paramIdx, const IText& text, cons
   LOGFONT lFont = { 0 };
   HFontHolder* hfontHolder = hfontStorage.Find(text.mFont);
   GetObject(hfontHolder->mHFont, sizeof(LOGFONT), &lFont);
-  lFont.lfHeight = text.mSize * scale;
+  lFont.lfHeight = -text.mSize * scale;
   mEditFont = CreateFontIndirect(&lFont);
 
   assert(hfontHolder && "font not found - did you forget to load it?");
