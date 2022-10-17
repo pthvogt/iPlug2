@@ -76,7 +76,13 @@ IGraphicsSkia::Bitmap::Bitmap(const char* path, double sourceScale)
   
   assert(data && "Unable to load file at path");
   
-  mDrawable.mImage = SkImage::MakeFromEncoded(data);
+  auto image = SkImage::MakeFromEncoded(data);
+  
+#ifdef IGRAPHICS_CPU
+  image = image->makeRasterImage();
+#endif
+  
+  mDrawable.mImage = image;
   
   mDrawable.mIsSurface = false;
   SetBitmap(&mDrawable, mDrawable.mImage->width(), mDrawable.mImage->height(), sourceScale, 1.f);
@@ -85,15 +91,26 @@ IGraphicsSkia::Bitmap::Bitmap(const char* path, double sourceScale)
 IGraphicsSkia::Bitmap::Bitmap(const void* pData, int size, double sourceScale)
 {
   auto data = SkData::MakeWithoutCopy(pData, size);
-  mDrawable.mImage = SkImage::MakeFromEncoded(data);
+  auto image = SkImage::MakeFromEncoded(data);
   
+#ifdef IGRAPHICS_CPU
+  image = image->makeRasterImage();
+#endif
+  
+  mDrawable.mImage = image;
+
   mDrawable.mIsSurface = false;
   SetBitmap(&mDrawable, mDrawable.mImage->width(), mDrawable.mImage->height(), sourceScale, 1.f);
 }
 
 IGraphicsSkia::Bitmap::Bitmap(sk_sp<SkImage> image, double sourceScale)
 {
+#ifdef IGRAPHICS_CPU
+  mDrawable.mImage = image->makeRasterImage();
+#else
   mDrawable.mImage = image;
+#endif
+
   SetBitmap(&mDrawable, mDrawable.mImage->width(), mDrawable.mImage->height(), sourceScale, 1.f);
 }
 
@@ -493,8 +510,12 @@ void IGraphicsSkia::DrawBitmap(const IBitmap& bitmap, const IRECT& dest, int src
   mCanvas->scale(scale1, scale1);
   mCanvas->translate(-srcX * scale2, -srcY * scale2);
   
-  auto samplingOptions = SkSamplingOptions(SkCubicResampler::CatmullRom());
-
+#ifdef IGRAPHICS_CPU
+  auto samplingOptions = SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
+#else
+  auto samplingOptions = SkSamplingOptions(SkCubicResampler::Mitchell());
+#endif
+    
   if (image->mIsSurface)
     image->mSurface->draw(mCanvas, 0.0, 0.0, samplingOptions, &p);
   else

@@ -121,7 +121,7 @@ void IGraphics::SetLayoutOnResize(bool layoutOnResize)
 
 void IGraphics::RemoveControlWithTag(int ctrlTag)
 {
-  mControls.DeletePtr(GetControlWithTag(ctrlTag));
+  mControls.DeletePtr(GetControlWithTag(ctrlTag), true);
   mCtrlTags.erase(ctrlTag);
   SetAllControlsDirty();
 }
@@ -140,7 +140,7 @@ void IGraphics::RemoveControls(int fromIdx)
       ClearMouseOver();
 
     if(pControl == mInTextEntry)
-      mInTextEntry = nullptr;
+      ClearInTextEntryControl();
 
     if(pControl == mInPopupMenu)
       mInPopupMenu = nullptr;
@@ -168,8 +168,8 @@ void IGraphics::RemoveControl(IControl* pControl)
     ClearMouseOver();
   
   if(pControl == mInTextEntry)
-    mInTextEntry = nullptr;
-  
+    ClearInTextEntryControl();
+
   if(pControl == mInPopupMenu)
     mInPopupMenu = nullptr;
   
@@ -242,7 +242,7 @@ void IGraphics::SetControlValueAfterTextEdit(const char* str)
     mInTextEntry->OnTextEntryCompletion(str, mTextEntryValIdx);
   }
 
-  mInTextEntry = nullptr;
+  ClearInTextEntryControl();
 }
 
 void IGraphics::SetControlValueAfterPopupMenu(IPopupMenu* pMenu)
@@ -1845,7 +1845,7 @@ void IGraphics::DoCreatePopupMenu(IControl& control, IPopupMenu& menu, const IRE
   mPopupMenuValIdx = valIdx;
   mIsContextMenu = isContext;
   
-  if(mPopupControl) // if we are not using platform pop-up menus
+  if (mPopupControl) // if we are not using platform pop-up menus
   {
     mPopupControl->CreatePopupMenu(menu, bounds);
   }
@@ -1854,7 +1854,7 @@ void IGraphics::DoCreatePopupMenu(IControl& control, IPopupMenu& menu, const IRE
     bool isAsync = false;
     IPopupMenu* pReturnMenu = CreatePlatformPopupMenu(menu, bounds, isAsync);
     
-    if(!isAsync)
+    if (!isAsync)
       SetControlValueAfterPopupMenu(pReturnMenu);
   }
 }
